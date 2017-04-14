@@ -1,5 +1,9 @@
+#This module queries the API and tweets out every few minutes.
+
 import pprint
 import requests
+import config
+from tinydb import TinyDB, Query
 
 API_getRandom = "http://api.petfinder.com/pet.getRandom"
 API_get = "http://api.petfinder.com/pet.get"
@@ -7,7 +11,7 @@ API_get = "http://api.petfinder.com/pet.get"
 def getRandom_params(location):
 
     params = dict()
-    params["key"] = yourkey
+    params["key"] = config.key
     params["location"] = location
     params["format"] = "json"
 
@@ -15,7 +19,7 @@ def getRandom_params(location):
 
 def get_params(petid):
     params = dict()
-    params["key"] = yourkey
+    params["key"] = config.key
     params['id'] = petid
     params['format'] = "json"
     return params
@@ -33,12 +37,11 @@ params = getRandom_params(location)
 randompetID = int(queryAPI(API_getRandom, params)['petfinder']["petIds"]["id"]["$t"])
 new_params = get_params(randompetID)
 data = queryAPI(API_get, new_params)
-pprint.pprint(data)
 
 def makestory(data):
     description = data['petfinder']["pet"]["description"]["$t"]
     pic = data["petfinder"]['pet']["media"]["photos"]["photo"][0]["$t"]
 
-    return description + pic
+    return description + "/n" + pic
 
 print(makestory(data))
